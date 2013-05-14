@@ -1,9 +1,9 @@
 class kermitrest {
-    include apache
     include yum
 
-    realize( Package[ 'httpd' ] )
-    realize( Service[ 'httpd' ] )
+    #include apache
+    #realize( Package[ 'httpd' ] )
+    #realize( Service[ 'httpd' ] )
 
     package { 'kermit-restmco' :
         ensure  => present,
@@ -121,7 +121,7 @@ class kermitrest {
         group   => 'root',
         mode    => '0644',
         source  => 'puppet:///modules/kermitrest/restmco.conf',
-        require => Package['httpd'],
+        #require => Package['httpd'],
     }
 
 }
