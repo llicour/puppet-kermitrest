@@ -1,6 +1,9 @@
 class kermitrest {
     include yum
 
+    # cf puppetlabs-apache
+    class { 'apache' : }
+
     #include apache
     #realize( Package[ 'httpd' ] )
     #realize( Service[ 'httpd' ] )
@@ -121,7 +124,7 @@ class kermitrest {
         group   => 'root',
         mode    => '0644',
         source  => 'puppet:///modules/kermitrest/restmco.conf',
-        #require => Package['httpd'],
+        require => Package['httpd'],
     }
 
 }
