@@ -1,3 +1,10 @@
+# Install and set a simple REST server that you can use to communicate with
+# MCollective (rpc communication).
+# Used with KermIT
+# See
+# https://puppetlabs.com/mcollective/introduction/
+# http://www.kermit.fr
+
 class kermitrest {
     include yum
 
