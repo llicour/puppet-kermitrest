@@ -3,8 +3,8 @@ class kermitrest {
 
     # cf puppetlabs-apache
     include apache
-    #realize( Package[ 'httpd' ] )
-    #realize( Service[ 'httpd' ] )
+    # the puppetlabs base apache module v. 0.6.0 does not open the http port
+    include apachefw
 
     package { 'kermit-restmco' :
         ensure  => present,
