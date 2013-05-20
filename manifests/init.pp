@@ -7,6 +7,7 @@
 
 class kermitrest {
     include yum
+    include yum::kermit
 
     # cf puppetlabs-apache
     include apache
