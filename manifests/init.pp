@@ -18,6 +18,18 @@ class kermitrest {
     # the puppetlabs base apache module v. 0.6.0 does not open the http port
     include apachefw
 
+    # Override the configuration purge by puppetlabs-apache in httpd/conf.d
+    file { 'passenger.conf' :
+        ensure   => present,
+        path     => '/etc/httpd/conf.d/passenger.conf',
+        require  => Package[ 'mod_passenger', 'httpd' ],
+        owner    => 'root',
+        group    => 'root',
+        mode     => '0644',
+        notify   => Service[ 'httpd' ],
+        # no source, it is provided by the package mod_passenger
+    }
+
     package { 'kermit-restmco' :
         ensure  => present,
         require => [ Yumrepo['kermit-custom', 'kermit-thirdpart'], ],
@@ -43,21 +55,6 @@ class kermitrest {
         gpgkey     => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-passenger',
     }
 
-    #package { 'mod_passenger' :
-    #    ensure  => present,
-    #    require => [ Yumrepo['passenger'], File['RPM-GPG-KEY-passenger'], ],
-    #}
-
-    file { 'passenger.conf' :
-        ensure  => 'file',
-        path    => '/etc/httpd/conf.d/passenger.conf',
-        content => template('kermitrest/passenger.conf'),
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0640',
-        notify  => Service[ 'httpd' ],
-    }
-
     service { 'kermit-restmco' :
         ensure => stopped,
         enable => false,
@@ -77,7 +74,7 @@ class kermitrest {
         group   => 'root',
         mode    => '0644',
         source  => 'puppet:///modules/kermitrest/kermit-restmco.cfg',
-        require => Exec['mkdir /etc/kermit'],
+        require => Exec[ 'mkdir /etc/kermit' ],
     }
 
     file { '/var/log/kermit-restmco.log' :
@@ -99,7 +96,7 @@ class kermitrest {
         owner   => 'root',
         group   => 'root',
         mode    => '0755',
-        require => File['/var/www/restmco'],
+        require => File[ '/var/www/restmco' ],
     }
 
     file { '/var/www/restmco/public' :
@@ -107,7 +104,7 @@ class kermitrest {
         owner   => 'root',
         group   => 'root',
         mode    => '0755',
-        require => File['/var/www/restmco'],
+        require => File[ '/var/www/restmco' ],
     }
 
     file { '/var/www/restmco/tmp/restart.txt' :
@@ -115,7 +112,7 @@ class kermitrest {
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
-        require => File['/var/www/restmco/tmp'],
+        require => File[ '/var/www/restmco/tmp' ],
     }
 
     file { 'mc-rpc-restserver.rb' :
@@ -125,7 +122,7 @@ class kermitrest {
         group   => 'root',
         mode    => '0644',
         source  => 'puppet:///modules/kermitrest/mc-rpc-restserver.rb',
-        require => File['/var/www/restmco'],
+        require => File[ '/var/www/restmco' ],
     }
 
     file { 'config.ru' :
@@ -135,7 +132,7 @@ class kermitrest {
         group   => 'root',
         mode    => '0644',
         source  => 'puppet:///modules/kermitrest/config.ru',
-        require => File['/var/www/restmco'],
+        require => File[ '/var/www/restmco' ],
     }
 
     file { 'restmco.conf' :
@@ -145,7 +142,7 @@ class kermitrest {
         group   => 'root',
         mode    => '0644',
         source  => 'puppet:///modules/kermitrest/restmco.conf',
-        require => Package['httpd'],
+        require => Package[ 'httpd' ],
     }
 
 }
