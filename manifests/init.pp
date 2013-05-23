@@ -11,7 +11,10 @@ class kermitrest {
 
     # cf puppetlabs-apache
     include apache
-    apache::mod { 'passenger': }
+    #apache::mod { 'passenger': }
+    class { 'apache::mod::passenger' :
+        require => [ Yumrepo['passenger'], File['RPM-GPG-KEY-passenger'], ],
+    }
     # the puppetlabs base apache module v. 0.6.0 does not open the http port
     include apachefw
 
@@ -39,10 +42,10 @@ class kermitrest {
         gpgkey     => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-passenger',
     }
 
-    package { 'mod_passenger' :
-        ensure  => present,
-        require => [ Yumrepo['passenger'], File['RPM-GPG-KEY-passenger'], ],
-    }
+    #package { 'mod_passenger' :
+    #    ensure  => present,
+    #    require => [ Yumrepo['passenger'], File['RPM-GPG-KEY-passenger'], ],
+    #}
 
     service { 'kermit-restmco' :
         ensure => stopped,
