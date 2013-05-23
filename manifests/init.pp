@@ -35,7 +35,8 @@ class kermitrest {
     yumrepo { 'passenger' :
         baseurl    =>
             'http://passenger.stealthymonkeys.com/rhel/$releasever/$basearch',
-        mirrorlist => 'http://passenger.stealthymonkeys.com/rhel/mirrors',
+        # some mirrors are out of date !
+        #mirrorlist => 'http://passenger.stealthymonkeys.com/rhel/mirrors',
         descr      => 'Red Hat Enterprise $releasever - Phusion Passenger',
         enabled    => 1,
         gpgcheck   => 1,
@@ -46,6 +47,16 @@ class kermitrest {
     #    ensure  => present,
     #    require => [ Yumrepo['passenger'], File['RPM-GPG-KEY-passenger'], ],
     #}
+
+    file { 'passenger.conf' :
+        ensure  => 'file',
+        path    => '/etc/httpd/conf.d/passenger.conf',
+        content => template('kermitrest/passenger.conf'),
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        notify  => Service[ 'httpd' ],
+    }
 
     service { 'kermit-restmco' :
         ensure => stopped,
