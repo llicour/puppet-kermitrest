@@ -8,51 +8,11 @@
 class kermitrest {
     include yum
     include yum::kermit
-
-    # cf puppetlabs-apache
-    include apache
-    #apache::mod { 'passenger': }
-    class { 'apache::mod::passenger' :
-        require => [ Yumrepo['passenger'], File['RPM-GPG-KEY-passenger'], ],
-    }
-    # the puppetlabs base apache module v. 0.6.0 does not open the http port
-    include apachefw
-
-    # Override the configuration purge by puppetlabs-apache in httpd/conf.d
-    file { 'passenger.conf' :
-        ensure   => present,
-        path     => '/etc/httpd/conf.d/passenger.conf',
-        require  => Package[ 'mod_passenger', 'httpd' ],
-        owner    => 'root',
-        group    => 'root',
-        mode     => '0644',
-        notify   => Service[ 'httpd' ],
-        # no source, it is provided by the package mod_passenger
-    }
-
+    include passenger
+    
     package { 'kermit-restmco' :
         ensure  => present,
         require => [ Yumrepo['kermit-custom', 'kermit-thirdpart'], ],
-    }
-
-    file { 'RPM-GPG-KEY-passenger' :
-        ensure => present,
-        path   => '/etc/pki/rpm-gpg/RPM-GPG-KEY-passenger',
-        source => 'puppet:///modules/kermitrest/RPM-GPG-KEY-passenger',
-        owner  => 'root',
-        group  => 'root',
-        mode   => '0644',
-    }
-
-    yumrepo { 'passenger' :
-        baseurl    =>
-            'http://passenger.stealthymonkeys.com/rhel/$releasever/$basearch',
-        # some mirrors are out of date !
-        #mirrorlist => 'http://passenger.stealthymonkeys.com/rhel/mirrors',
-        descr      => 'Red Hat Enterprise $releasever - Phusion Passenger',
-        enabled    => 1,
-        gpgcheck   => 1,
-        gpgkey     => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-passenger',
     }
 
     service { 'kermit-restmco' :
